@@ -20,8 +20,7 @@ public class CreateUserDtoValidator : AbstractValidator<CreateUserDto>
             .MaximumLength(255).WithMessage("Email не может быть длиннее 255 символов.");
 
         RuleFor(x => x.DateOfBirth)
-            .LessThan(DateTime.Now).WithMessage("Дата рождения должна быть в прошлом.")
-            .Must(date => date <= DateTime.Now.AddYears(-18))
-            .WithMessage("Пользователь должен быть совершеннолетним (18+).");
+            .NotEmpty().WithMessage("Дата рождения обязательна.")
+            .LessThanOrEqualTo(DateTime.Today) .WithMessage("Дата рождения не может быть в будущем.");
     }
 }

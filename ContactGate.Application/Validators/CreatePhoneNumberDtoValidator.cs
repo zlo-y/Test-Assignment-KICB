@@ -7,12 +7,12 @@ namespace ContactGate.Application.Validators;
 // 
 // Валидатор для CreatePhoneNumberDto.
 // 
-public class CreatePhoneNumberDtoValidator : AbstractValidator<PhoneNumberDto>
+public class CreatePhoneNumberDtoValidator : AbstractValidator<CreatePhoneNumberDto>
 {
     public CreatePhoneNumberDtoValidator()
     {
         RuleFor(x => x.UserId)
-            .NotEmpty().WithMessage("ID юзера не может быть пустым.");
+            .NotEmpty().WithMessage("Необходимо выбрать владельца номера телефона.");
 
         RuleFor(x => x.Number)
             .NotEmpty().WithMessage("Номер телефона не может быть пустым.")
