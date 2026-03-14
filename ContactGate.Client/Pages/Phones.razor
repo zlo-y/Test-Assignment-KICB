@@ -1,0 +1,174 @@
+@using Microsoft.AspNetCore.WebUtilities
+@using ContactGate.Application.DTOs
+@page "/phones"
+@inject HttpClient Http
+@inject NavigationManager Nav
+
+
+ @* Страница для управления реестром телефонных номеров.  *@
+
+
+<div class="container mt-4">
+    <div class="d-flex align-items-center mb-4">
+        <button class="btn btn-outline-secondary me-3" @onclick='() => Nav.NavigateTo("/users")'>⬅</button>
+        <h3>📱 Реестр телефонных номеров</h3>
+    </div>
+   
+    // Форма управления записью (создание и редактирование)
+    <div class="card p-3 mb-4 bg-light shadow-sm">
+        <h6 class="card-subtitle mb-2 text-muted">
+            @(editingPhoneId == null ? "Добавить номер" : "Редактировать номер")
+        </h6>
+        
+        <div class="row g-2">
+            <div class="col-md-4">
+                <select class="form-select" @bind="newPhone.UserId" disabled="@(editingPhoneId != null)">
+                    <option value="0">-- Выберите владельца --</option>
+                    @if (users != null)
+                        @foreach (var u in users) { <option value="@u.Id">@u.Name (@u.Email)</option> }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <input class="form-control" @bind="newPhone.Number" placeholder="+996 (555) 00-00-00" />
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+                <button class="btn @(editingPhoneId == null ? "btn-success" : "btn-warning") w-100" @onclick="SavePhone">
+                    @(editingPhoneId == null ? "Сохранить" : "Обновить")
+                </button>
+                @if (editingPhoneId != null) { <button class="btn btn-outline-secondary" @onclick="CancelEdit">✖</button> }
+            </div>
+        </div>
+        @if (!string.IsNullOrEmpty(errorMessage)) { <div class="text-danger small mt-2">@errorMessage</div> }
+    </div>
+
+     @*  Панель фильтрации данных *@
+    <div class="d-flex justify-content-between align-items-center mb-3 p-2 bg-white border rounded shadow-sm">
+        <h5 class="mb-0">Список записей</h5>
+        <div class="d-flex align-items-center gap-2">
+            <span class="text-muted small">Фильтр:</span>
+            <select class="form-select form-select-sm" style="width: 300px;" @bind="selectedFilterUserId">
+                <option value="0">Все пользователи</option>
+                @if (users != null)
+                    @foreach (var u in users) { <option value="@u.Id">@u.Name (@u.Email)</option> }
+            </select>
+            @if (selectedFilterUserId != 0) {
+                <button class="btn btn-sm btn-link p-0 text-decoration-none" @onclick="() => selectedFilterUserId = 0">Сбросить</button>
+            }
+        </div>
+    </div>
+
+     @* Таблица отображения телефонных записей *@
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Номер</th>
+                    <th>Владелец</th>
+                    <th class="text-end">Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (allPhones == null) { <tr><td colspan="3" class="text-center">Загрузка...</td></tr> }
+                else {
+                    var filteredPhones = selectedFilterUserId == 0 
+                        ? allPhones 
+                        : allPhones.Where(ph => ph.UserId == selectedFilterUserId).ToList();
+
+                    if (!filteredPhones.Any()) { <tr><td colspan="3" class="text-center text-muted py-4">Номера не найдены</td></tr> }
+                    else {
+                        @foreach (var p in filteredPhones) {
+                            var owner = users?.FirstOrDefault(u => u.Id == p.UserId);
+                            <tr>
+                                <td><strong>@p.Number</strong></td>
+                                <td>
+                                    <div>@(owner?.Name ?? "Неизвестно")</div>
+                                    <div class="text-muted small" style="font-size: 0.75rem;">@(owner?.Email ?? "—")</div>
+                                </td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-outline-warning me-1" @onclick="() => StartEdit(p)">📝</button>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="() => DeletePhone(p.Id)">🗑️</button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private List<UserDto>? users;
+    private List<PhoneNumberDto>? allPhones;
+    private CreatePhoneNumberDto newPhone = new();
+    private string? errorMessage;
+    private int? editingPhoneId = null;
+    private int selectedFilterUserId = 0;
+    //
+    // Инициализация данных и обработка параметров запроса из URL
+    //
+    protected override async Task OnInitializedAsync() {
+        await LoadData();
+        
+        var uri = Nav.ToAbsoluteUri(Nav.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("userId", out var idValue) && int.TryParse(idValue.ToString(), out var parsedId)) {
+            newPhone.UserId = parsedId;
+            selectedFilterUserId = parsedId; 
+        }
+    }
+    //
+    // Получение актуальных списков пользователей и телефонов
+    //
+    private async Task LoadData() {
+        try {
+            var fUsers = await Http.GetFromJsonAsync<List<UserDto>>("api/Users");
+            users = fUsers?.OrderBy(u => u.Name).ToList();
+            allPhones = await Http.GetFromJsonAsync<List<PhoneNumberDto>>("api/Phones");
+        } catch { errorMessage = "Ошибка сети."; }
+    }
+    //
+    // Перевод формы в режим редактирования существующей записи
+    //
+    private void StartEdit(PhoneNumberDto phone) {
+        errorMessage = null;
+        editingPhoneId = phone.Id;
+        newPhone.UserId = phone.UserId;
+        newPhone.Number = phone.Number;
+    }
+    //
+    // Сброс состояния формы и очистка ошибок
+    //
+    private void CancelEdit() {
+        editingPhoneId = null;
+        newPhone = new CreatePhoneNumberDto { UserId = newPhone.UserId };
+        errorMessage = null;
+    }
+    //
+    // Обработка сохранения данных: создание новой записи или обновление текущей
+    //
+    private async Task SavePhone() {
+        if (newPhone.UserId == 0 || string.IsNullOrWhiteSpace(newPhone.Number)) {
+            errorMessage = "Заполните данные."; return;
+        }
+
+        // Нормализация номера перед отправкой на сервер
+        var userInput = newPhone.Number;
+        newPhone.Number = new string(userInput.Where(c => char.IsDigit(c) || c == '+').ToArray());
+
+        HttpResponseMessage res = (editingPhoneId == null) 
+            ? await Http.PostAsJsonAsync("api/Phones", newPhone)
+            : await Http.PutAsJsonAsync($"api/Phones/{editingPhoneId}", new UpdatePhoneNumberDto { Number = newPhone.Number });
+
+        if (res.IsSuccessStatusCode) { CancelEdit(); await LoadData(); }
+        else { newPhone.Number = userInput; errorMessage = "Ошибка валидации номера."; }
+    }
+    //
+    // Удаление записи по идентификатору через API
+    //
+    private async Task DeletePhone(int id) {
+        var response = await Http.DeleteAsync($"api/Phones/{id}");
+        if (response.IsSuccessStatusCode) {
+            await LoadData();
+        }
+    }
+}

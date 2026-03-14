@@ -1,0 +1,152 @@
+@page "/users"
+@using ContactGate.Application.DTOs
+@inject HttpClient Http
+@inject NavigationManager Nav
+
+
+@* Страница управления пользователями системы.  *@
+ @* Реализует CRUD операции и интеграцию с модальным окном для редактирования данных. *@
+
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>👥 Управление пользователями</h2>
+        <button class="btn btn-primary" @onclick="() => OpenModal()">+ Новый пользователь</button>
+    </div>
+
+     @* Основная таблица со списком пользователей *@
+    <table class="table table-hover shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Имя</th>
+                <th>Email</th>
+                <th>Дата рождения</th>
+                <th class="text-end">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (users == null) { <tr><td colspan="4">Загрузка...</td></tr> }
+            else {
+                @foreach (var user in users) {
+                    <tr>
+                        <td><strong>@user.Name</strong></td>
+                        <td>@user.Email</td>
+                        <td>@user.DateOfBirth.ToShortDateString()</td>
+                        <td class="text-end">
+                             @* Переход к связанным телефонам пользователя *@
+                            <button class="btn btn-sm btn-info text-white" @onclick="() => ViewDetails(user.Id)">📞 Телефоны</button>
+                            <button class="btn btn-sm btn-warning" @onclick="() => OpenModal(user)">📝</button>
+                            <button class="btn btn-sm btn-danger" @onclick="() => DeleteUser(user.Id)">🗑️</button>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (isModalOpen)
+{
+     @* Модальное окно для создания и редактирования профиля *@
+    <div class="modal fade show d-block" style="background: rgba(0,0,0,0.5)">
+        <div class="modal-dialog">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title">@(editingUserId == null ? "Добавить" : "Редактировать") пользователя</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+
+                <div class="modal-body">
+                    @* Вывод ошибок бизнес-логики или FluentValidation *@
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger py-2">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> @errorMessage
+                        </div>
+                    }
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Имя</label>
+                        <input class="form-control" @bind="userModel.Name" placeholder="Напр. Иван Иванов" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Email</label>
+                        <input type="email" class="form-control" @bind="userModel.Email" placeholder="example@mail.com" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Дата рождения</label>
+                        <input type="date" class="form-control" @bind="userModel.DateOfBirth" />
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Отмена</button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveUser">
+                        <span class="px-2">Сохранить</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<UserDto>? users;
+    private CreateUserDto userModel = new();
+    private bool isModalOpen = false;
+    private int? editingUserId = null;
+    private string? errorMessage; 
+
+    protected override async Task OnInitializedAsync() => await LoadUsers();
+
+    // Загрузка списка всех пользователей из API
+    private async Task LoadUsers() => users = await Http.GetFromJsonAsync<List<UserDto>>("api/Users");
+    //
+    // Инициализация модели данных для модального окна
+    //
+    private void OpenModal(UserDto? user = null) {
+        errorMessage = null; 
+        if (user != null) {
+            editingUserId = user.Id;
+            userModel = new CreateUserDto { Name = user.Name, Email = user.Email, DateOfBirth = user.DateOfBirth };
+        } else {
+            editingUserId = null;
+            userModel = new CreateUserDto { DateOfBirth = DateTime.Today };
+        }
+        isModalOpen = true;
+    }
+
+    private void CloseModal() => isModalOpen = false;
+    //
+    // Сохранение изменений через API с обработкой результата валидации
+    //
+    private async Task SaveUser() {
+        errorMessage = null;
+        HttpResponseMessage response;
+
+        if (editingUserId == null) 
+            response = await Http.PostAsJsonAsync("api/Users", userModel);
+        else 
+            response = await Http.PutAsJsonAsync($"api/Users/{editingUserId}", userModel);
+        
+        if (response.IsSuccessStatusCode) {
+            CloseModal();
+            await LoadUsers();
+        } else {
+            errorMessage = "Ошибка валидации: Проверьте формат Email, длину имени (мин. 2 симв.) или дату рождения.";
+        }
+    }
+    //
+    // Удаление пользователя и обновление локального списка данных
+    //
+    private async Task DeleteUser(int id) {
+        await Http.DeleteAsync($"api/Users/{id}");
+        await LoadUsers();
+    }
+    //
+    // Навигация к странице телефонов с фильтрацией по конкретному ID
+    //
+    private void ViewDetails(int id) => Nav.NavigateTo($"/phones?userId={id}");
+}
