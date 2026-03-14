@@ -1,0 +1,11 @@
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Domain\bin\Debug\net10.0\ContactGate.Domain.deps.json
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Domain\bin\Debug\net10.0\ContactGate.Domain.dll
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Domain\bin\Debug\net10.0\ContactGate.Domain.pdb
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Domain\obj\Debug\net10.0\ContactGate.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Domain\obj\Debug\net10.0\ContactGate.Domain.AssemblyInfoInputs.cache
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Domain\obj\Debug\net10.0\ContactGate.Domain.AssemblyInfo.cs
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Domain\obj\Debug\net10.0\ContactGate.Domain.csproj.CoreCompileInputs.cache
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Domain\obj\Debug\net10.0\ContactGate.Domain.dll
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Domain\obj\Debug\net10.0\refint\ContactGate.Domain.dll
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Domain\obj\Debug\net10.0\ContactGate.Domain.pdb
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Domain\obj\Debug\net10.0\ref\ContactGate.Domain.dll

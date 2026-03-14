@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: contactgate-db
+    restart: always
+    environment:
+      POSTGRES_USER: kicbuser
+      POSTGRES_PASSWORD: testpasswordinproject
+      POSTGRES_DB: contactgatedb
+    ports:
+      - "5444:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+volumes:
+  postgres_data:
+

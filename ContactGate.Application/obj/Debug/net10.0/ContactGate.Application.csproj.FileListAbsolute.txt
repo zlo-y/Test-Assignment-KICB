@@ -1,0 +1,15 @@
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Application\bin\Debug\net10.0\ContactGate.Application.deps.json
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Application\bin\Debug\net10.0\ContactGate.Application.dll
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Application\bin\Debug\net10.0\ContactGate.Application.pdb
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Application\bin\Debug\net10.0\ContactGate.Domain.dll
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Application\bin\Debug\net10.0\ContactGate.Domain.pdb
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Application\obj\Debug\net10.0\ContactGate.Application.csproj.AssemblyReference.cache
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Application\obj\Debug\net10.0\ContactGate.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Application\obj\Debug\net10.0\ContactGate.Application.AssemblyInfoInputs.cache
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Application\obj\Debug\net10.0\ContactGate.Application.AssemblyInfo.cs
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Application\obj\Debug\net10.0\ContactGate.Application.csproj.CoreCompileInputs.cache
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Application\obj\Debug\net10.0\ContactG.E1D3E74B.Up2Date
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Application\obj\Debug\net10.0\ContactGate.Application.dll
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Application\obj\Debug\net10.0\refint\ContactGate.Application.dll
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Application\obj\Debug\net10.0\ContactGate.Application.pdb
+C:\Users\krato\OneDrive\Desktop\ContactGate\ContactGate.Application\obj\Debug\net10.0\ref\ContactGate.Application.dll
