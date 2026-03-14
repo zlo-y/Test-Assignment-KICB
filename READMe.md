@@ -43,9 +43,3 @@
 
 ---
 
-### Финальные команды в терминале:
-
-```bash
-git add README.md
-git commit -m "docs: финальное оформление документации проекта"
-git push origin main
