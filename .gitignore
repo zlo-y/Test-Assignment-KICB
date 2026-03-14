@@ -1,5 +1,7 @@
 [Bb]in/
 [Ob]j/
+obj/
+bin/
 .vs/
 .vscode/
 appsettings.Development.json

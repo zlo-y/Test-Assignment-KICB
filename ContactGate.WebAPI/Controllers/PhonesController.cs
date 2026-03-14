@@ -40,7 +40,7 @@ public class PhonesController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, UpdatePhoneNumberDto dto)
+    public async Task<IActionResult> Update(int id, [FromBody] UpdatePhoneNumberDto dto)
     {
         await _phoneService.UpdatePhoneNumberAsync(id, dto);
         return NoContent();

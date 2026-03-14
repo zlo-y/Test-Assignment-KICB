@@ -15,7 +15,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<PhoneNumber> PhonesNumber => Set<PhoneNumber>();
 
 // 
-// Настройка модели данных. Здесь мы определяем ключи, обязательные поля, максимальную длину и связи между сущностями User и PhoneNumber. Например, указываем, что User может иметь много PhoneNumber.
+// Настройка модели данных. Здесь мы определяем ключи, обязательные поля, максимальную длину и связи между сущностями User и PhoneNumber. 
 // 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

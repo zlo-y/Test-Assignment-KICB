@@ -12,6 +12,30 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql
 
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: contactgate-api
+    depends_on:
+      - db
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=contactgatedb;Username=kicbuser;Password=testpasswordinproject
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "5000:8080"
+
+  client:
+    build:
+      context: .
+      dockerfile: ContactGate.Client/Dockerfile 
+    container_name: contactgate-client
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    environment:
+      - API_URL=http://localhost:5000
+
 volumes:
   postgres_data:
-
